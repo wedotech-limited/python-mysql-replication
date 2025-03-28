@@ -322,8 +322,13 @@ class RowsEvent(BinLogEvent):
         string = self.packet.read_length_coded_pascal_string(size)
         origin_string = string
         decode_errors = "ignore" if self._ignore_decode_errors else "strict"
-        if column.character_set_name is not None:
-            encoding = self.charset_to_encoding(column.character_set_name)
+        character_set_name = self._ctl_connection.charset if self._ctl_connection is not None else None
+        character_set_name = (
+            column.character_set_name if column.character_set_name is not None else character_set_name
+        )
+
+        if character_set_name is not None:
+            encoding = self.charset_to_encoding(character_set_name)
             try:
                 string = string.decode(encoding, decode_errors)
             except LookupError:
