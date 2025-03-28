@@ -334,6 +334,8 @@ class RowsEvent(BinLogEvent):
             except LookupError:
                 # python does not support Mysql encoding type ex)swe7 it will not decoding then Show origin string
                 string = origin_string
+            except Exception:
+                string = string.decode(errors="replace")
         else:
             # MYSQL 5.xx Version  Goes Here
             # We don't know encoding type So apply Default Utf-8
